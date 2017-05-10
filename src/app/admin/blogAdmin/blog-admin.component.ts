@@ -46,6 +46,11 @@ export class BlogAdminComponent implements OnInit {
             });
     }
 
+    editPost(thePost: Blog){
+        this.singlePost = thePost;
+        this.formDisplay = false;
+    }
+
     cancelEdit(){
         this.formDisplay = true;
     }
@@ -53,10 +58,6 @@ export class BlogAdminComponent implements OnInit {
     updatePost(single: Blog){
         this.blogAdminSVC.editPost(single);
         this.formDisplay = true;
-    }
-
-    editPost(update: Blog) {
-
     }
 
     deletePost(single: Blog){

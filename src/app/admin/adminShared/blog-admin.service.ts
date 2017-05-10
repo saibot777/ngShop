@@ -1,51 +1,51 @@
-/**
- * Created by stefan.trajkovic on 10.5.2017..
- */
+import { Injectable } from '@angular/core';
 import * as firebase from 'firebase';
-import {Injectable} from "@angular/core";
-import {Blog} from "./blog";
+import { Blog } from '../adminShared/blog';
 
 @Injectable()
+
 export class BlogAdminService {
 
-    createPost(post : Blog) {
+    createPost(post: Blog){
         let storageRef = firebase.storage().ref();
         storageRef.child(`images/${post.imgTitle}`).putString(post.img, 'base64')
-            .then((snapshot) => {
+            .then((snapshot) => { 
                 let url = snapshot.metadata.downloadURLs[0];
                 let dbRef = firebase.database().ref('blogPosts/');
                 let newPost = dbRef.push();
-                newPost.set({
-                    title : post.title,
-                    content : post.content,
-                    imgTitle : post.imgTitle,
-                    img : url,
-                    id : newPost.key
-                });
+                newPost.set ({
+                    title: post.title,
+                    content: post.content,
+                    imgTitle: post.imgTitle,
+                    img: url,
+                    id: newPost.key
+                });         
             })
-            .catch((error) => {
+            .catch ((error)=>{
                 alert(`failed upload: ${error}`);
-            })
+            });            
     }
 
-    editPost(update : Blog){
+    editPost(update: Blog){
         let dbRef = firebase.database().ref('blogPosts/').child(update.id)
             .update({
-                title : update.title,
-                content : update.content
-            })
+                title: update.title,
+                content: update.content
+            });
+        alert('post updated');       
     }
 
-    removePost(deletePost : Blog) {
+    removePost(deletePost: Blog){
         let dbRef = firebase.database().ref('blogPosts/').child(deletePost.id).remove();
         alert('post deleted');
         let imageRef = firebase.storage().ref().child(`images/${deletePost.imgTitle}`)
             .delete()
-                .then(function () {
+                .then(function() {
                     alert(`${deletePost.imgTitle} was deleted from Storage`);
-                }).catch(function () {
-                        alert(`Error -  Unable to delete ${deletePost.imgTitle}`);
-                  })
+                }).catch(function(error) {
+                    alert(`Error - Unable to delete ${deletePost.imgTitle}`);
+                });
     }
+
 
 }
