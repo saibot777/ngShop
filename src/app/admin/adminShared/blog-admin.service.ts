@@ -1,0 +1,31 @@
+/**
+ * Created by stefan.trajkovic on 10.5.2017..
+ */
+import * as firebase from 'firebase';
+import {Injectable} from "@angular/core";
+import {Blog} from "./blog";
+
+@Injectable()
+export class BlogAdminService {
+
+    createPost(post : Blog) {
+        let storageRef = firebase.storage().ref();
+        storageRef.child(`images/${post.imgTitle}`).putString(post.img, 'base64')
+            .then((snapshot) => {
+                let url = snapshot.metadata.downloadURLs[0];
+                let dbRef = firebase.database().ref('blogPosts/');
+                let newPost = dbRef.push();
+                newPost.set({
+                    title : post.title,
+                    content : post.content,
+                    imgTitle : post.imgTitle,
+                    img : url,
+                    id : newPost.key
+                });
+            })
+            .catch((error) => {
+                alert(`failed upload: ${error}`);
+            })
+    }
+
+}
